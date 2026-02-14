@@ -1,81 +1,58 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>System Locked</title>
+<title>n4hwnl</title>
 
 <style>
-body {
-    margin: 0;
-    overflow: hidden;
-    background: black;
-    font-family: 'Courier New', monospace;
-    color: #00ff00;
-    text-align: center;
+body{
+    margin:0;
+    overflow:hidden;
+    background:black;
+    font-family: monospace;
+    color:#00ff00;
+    text-align:center;
 }
 
-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: -1;
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:-1;
 }
 
-.container {
-    position: relative;
-    top: 40%;
+.small{
+    font-size:14px;
+    margin-top:20px;
+    opacity:0.7;
 }
 
-.small {
-    font-size: 14px;
-    opacity: 0.6;
-    margin-bottom: 20px;
+.big{
+    font-size:40px;
+    margin-top:20%;
+    animation: blink 1s infinite;
 }
 
-.medium {
-    font-size: 22px;
-    margin-bottom: 10px;
+.emoji{
+    font-size:120px;
+    margin-top:20px;
+    display:none;
 }
 
-input {
-    padding: 10px;
-    font-size: 18px;
-    background: black;
-    border: 2px solid #00ff00;
-    color: #00ff00;
-    outline: none;
-    text-align: center;
+input{
+    margin-top:20px;
+    padding:10px;
+    font-size:16px;
+    background:black;
+    border:2px solid #00ff00;
+    color:#00ff00;
+    outline:none;
 }
 
-.big {
-    font-size: 38px;
-    text-shadow: 0 0 10px #00ff00,
-                 0 0 20px #00ff00,
-                 0 0 40px #00ff00;
-    animation: glitch 0.8s infinite, blink 0.6s infinite;
-}
-
-/* Glitch gerak */
-@keyframes glitch {
-    0% { transform: translate(0); }
-    20% { transform: translate(-3px,2px); }
-    40% { transform: translate(3px,-2px); }
-    60% { transform: translate(-2px,-3px); }
-    80% { transform: translate(2px,3px); }
-    100% { transform: translate(0); }
-}
-
-/* Kedip muncul-hilang */
-@keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-.countdown {
-    font-size: 25px;
-    margin-top: 20px;
+@keyframes blink{
+    0%{opacity:1;}
+    50%{opacity:0;}
+    100%{opacity:1;}
 }
 </style>
 </head>
@@ -84,11 +61,13 @@ input {
 
 <canvas id="matrix"></canvas>
 
-<div class="container" id="main">
-    <div class=" medium">Created by n4hwnl</div>
-    <div class="medium">Enter your password</div>
-    <input type="password" id="password" placeholder="Type here...">
-</div>
+<div class="small">Created by n4hwnl</div>
+
+<div class="big" id="mainText">ACCESS TERMINAL</div>
+
+<div class="emoji" id="emoji">🖕🤪</div>
+
+<input type="password" placeholder="Enter your password" id="pw">
 
 <script>
 // MATRIX EFFECT
@@ -102,61 +81,77 @@ var letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 letters = letters.split("");
 
 var fontSize = 14;
-var columns = canvas.width / fontSize;
+var columns = canvas.width/fontSize;
 var drops = [];
 
-for (var x = 0; x < columns; x++)
+for(var x = 0; x < columns; x++)
     drops[x] = 1;
 
-function draw() {
+function draw(){
     ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = "#0F0";
     ctx.font = fontSize + "px monospace";
 
-    for (var i = 0; i < drops.length; i++) {
-        var text = letters[Math.floor(Math.random() * letters.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    for(var i = 0; i < drops.length; i++){
+        var text = letters[Math.floor(Math.random()*letters.length)];
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
 
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+        if(drops[i]*fontSize > canvas.height && Math.random() > 0.975)
             drops[i] = 0;
 
         drops[i]++;
     }
 }
-
 setInterval(draw, 33);
 
-// BEEP SOUND
-function beep(){
-    let ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
-    let osc = ctxAudio.createOscillator();
+// SOUND FUNCTION
+function beep(freq, duration){
+    let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let osc = audioCtx.createOscillator();
     osc.type = "square";
-    osc.frequency.value = 600;
-    osc.connect(ctxAudio.destination);
+    osc.frequency.value = freq;
+    osc.connect(audioCtx.destination);
     osc.start();
-    setTimeout(()=>osc.stop(),150);
+    setTimeout(()=>{
+        osc.stop();
+        audioCtx.close();
+    }, duration);
 }
 
-// ENTER ACTION
-document.getElementById("password").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") {
+// PASSWORD ENTER EFFECT
+document.getElementById("pw").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
 
-        document.getElementById("main").innerHTML = `
-            <div class="big">PERANGKAT ANDA TELAH DI KUNCI</div>
-            <div class="countdown">Closing in <span id="timer">10</span></div>
-        `;
+        let count = 5;
+        let mainText = document.getElementById("mainText");
+        let emoji = document.getElementById("emoji");
 
-        let time = 10;
-        let countdown = setInterval(()=>{
-            beep();
-            time--;
-            document.getElementById("timer").innerText = time;
-            if(time <= 0){
-                clearInterval(countdown);
-                window.location.href = "about:blank";
+        this.style.display = "none";
+        mainText.innerText = "Please Wait " + count;
+
+        let timer = setInterval(function(){
+            beep(600,150); // sound dep tiap detik
+
+            count--;
+            mainText.innerText = "Please Wait " + count;
+
+            if(count <= 0){
+                clearInterval(timer);
+
+                mainText.style.display = "none";
+                emoji.style.display = "block";
+
+                beep(200,500); // sound lebih berat pas emoji muncul
+
+                setTimeout(function(){
+                    emoji.style.display = "none";
+                    mainText.style.display = "block";
+                    mainText.innerText = "WELCOME";
+                },2000);
             }
+
         },1000);
     }
 });

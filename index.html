@@ -1,70 +1,166 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>hac4k nahwnl</title>
-    <style>
-        /* Animasi background bergerak */
-        @keyframes bgMove {
-            0% {background-position: 0 0;}
-            50% {background-position: 100% 100%;}
-            100% {background-position: 0 0;}
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Locked</title>
 
-        body {
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(45deg, #000000, #0f0f0f, #001100, #0a0a0a);
-            background-size: 400% 400%;
-            animation: bgMove 20s linear infinite;
-            color: #00FF00;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    font-family: 'Courier New', monospace;
+    color: #00ff00;
+    text-align: center;
+}
 
-        /* Glow effect untuk teks */
-        h1, h2 {
-            text-shadow:
-                0 0 5px #00FF00,
-                0 0 10px #00FF00,
-                0 0 20px #00FF00,
-                0 0 40px #00FF00;
-        }
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
 
-        h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            animation: flicker 1.5s infinite;
-        }
+.container {
+    position: relative;
+    top: 40%;
+}
 
-        h2 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            animation: flicker 1.5s infinite;
-        }
+.small {
+    font-size: 14px;
+    opacity: 0.6;
+    margin-bottom: 20px;
+}
 
-        p {
-            font-size: 1.5em;
-            text-shadow:
-                0 0 5px #00FF00,
-                0 0 10px #00FF00;
-        }
+.medium {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
 
-        /* Flicker effect */
-        @keyframes flicker {
-            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {opacity: 1;}
-            20%, 22%, 24%, 55% {opacity: 0.4;}
-        }
-    </style>
+input {
+    padding: 10px;
+    font-size: 18px;
+    background: black;
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    outline: none;
+    text-align: center;
+}
+
+.big {
+    font-size: 38px;
+    text-shadow: 0 0 10px #00ff00,
+                 0 0 20px #00ff00,
+                 0 0 40px #00ff00;
+    animation: glitch 0.8s infinite, blink 0.6s infinite;
+}
+
+/* Glitch gerak */
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-3px,2px); }
+    40% { transform: translate(3px,-2px); }
+    60% { transform: translate(-2px,-3px); }
+    80% { transform: translate(2px,3px); }
+    100% { transform: translate(0); }
+}
+
+/* Kedip muncul-hilang */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.countdown {
+    font-size: 25px;
+    margin-top: 20px;
+}
+</style>
 </head>
+
 <body>
-    <h1>Komunitas</h1>
-    <h2>n4hwnl</h2>
-    <p>Shell chek</p>
+
+<canvas id="matrix"></canvas>
+
+<div class="container" id="main">
+    <div class=" medium">Created by n4hwnl</div>
+    <div class="medium">Enter your password</div>
+    <input type="password" id="password" placeholder="Type here...">
+</div>
+
+<script>
+// MATRIX EFFECT
+var canvas = document.getElementById("matrix");
+var ctx = canvas.getContext("2d");
+
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+
+var letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+letters = letters.split("");
+
+var fontSize = 14;
+var columns = canvas.width / fontSize;
+var drops = [];
+
+for (var x = 0; x < columns; x++)
+    drops[x] = 1;
+
+function draw() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#0F0";
+    ctx.font = fontSize + "px monospace";
+
+    for (var i = 0; i < drops.length; i++) {
+        var text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+            drops[i] = 0;
+
+        drops[i]++;
+    }
+}
+
+setInterval(draw, 33);
+
+// BEEP SOUND
+function beep(){
+    let ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
+    let osc = ctxAudio.createOscillator();
+    osc.type = "square";
+    osc.frequency.value = 600;
+    osc.connect(ctxAudio.destination);
+    osc.start();
+    setTimeout(()=>osc.stop(),150);
+}
+
+// ENTER ACTION
+document.getElementById("password").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+
+        document.getElementById("main").innerHTML = `
+            <div class="big">PERANGKAT ANDA TELAH DI KUNCI</div>
+            <div class="countdown">Closing in <span id="timer">10</span></div>
+        `;
+
+        let time = 10;
+        let countdown = setInterval(()=>{
+            beep();
+            time--;
+            document.getElementById("timer").innerText = time;
+            if(time <= 0){
+                clearInterval(countdown);
+                window.location.href = "about:blank";
+            }
+        },1000);
+    }
+});
+</script>
+
 </body>
 </html>
